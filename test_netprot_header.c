@@ -122,6 +122,23 @@ void test_header_size(void) {
 	assert_int_equal(0, err);
 }
 
+/* Test data size is stored correctly */
+void test_size(void) {
+	struct netstruct header;
+	char *ptr; /* So we can index into header */
+	int err;
+	int sizein = 0xaabbccdd; /* Designed to trip up byte order */
+	int sizeout;
+
+	err = netprot_header_append(&header, 0, sizein, 0, 0);
+	assert_false(err);
+
+	/* Check size is valid */
+	ptr = getoffsetptr(header, 24);  /* Size is 24 bytes in */
+	sizeout = extract_uint32(ptr);
+	assert_int_equal(sizein, sizeout);
+}
+
 /* Tests for netprot_header_append*/
 void test_netprot_header_append(void) {
 	test_fixture_start();
@@ -131,6 +148,7 @@ void test_netprot_header_append(void) {
 	run_test(test_version);
 	run_test(test_dt);
 	run_test(test_header_size);
+	run_test(test_size);
 	test_fixture_end();
 }
 
