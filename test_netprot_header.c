@@ -117,8 +117,6 @@ void test_header_size(void) {
 	header_size_ptr = getoffsetptr(*header, 1);
 	header_size = extract_uint8(header_size_ptr);
 
-	printf("header_size: %d \n", header_size);
-
 	/* Check data is valid */
 	data_ptr = getoffsetptr(*header, header_size);
 	err = strncmp(data_ptr, data, datasize);
