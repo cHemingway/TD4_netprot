@@ -90,7 +90,6 @@ void test_dt(void) {
 }
 
 /* Test to see if header_size is valid */
-//FIXME: Does not pass currently, find out why!
 void test_header_size(void) {
 	struct netstruct *header;
 	char *header_size_ptr, *data_ptr;
