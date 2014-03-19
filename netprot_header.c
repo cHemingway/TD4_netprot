@@ -44,3 +44,67 @@ int netprot_header_append(struct netstruct *toappend, int count,
 
 	return 0; //Success
 }
+
+
+int netprot_header_decode(const void *decode, int decodelen,
+							char **dataout, int *datasize,
+							int *count, long long *dt_ns, char *flags)
+{
+	char *ptr; /* General pointer */
+	uint8_t version, header_size;
+	uint32_t dt_s;
+
+
+	/* Check pointers */
+	if ((decode==NULL) || (datasize==NULL ) || (count==NULL) || (dt_ns==NULL) ||
+		(flags==NULL) ){
+		return NP_ERR_PARAM;
+	}
+
+	/* Check length is enough for a header */
+	if (decodelen < NETSTRUCT_LEN) {
+		return NP_ERR_PARAM;
+	}
+
+	/* Extract version and check */
+	version = extract_uint8(decode);
+	if (version != NETPROT_VERSION) {
+		return NP_ERR_CORRUPT; /* Invalid protocol version */
+	}
+
+	/* Check header size, could be corrupted by padding not working */
+	ptr = ptroffset(decode, HEADER_SIZE_OFFSET);
+	header_size = extract_uint8(ptr);
+	if (header_size != NETSTRUCT_LEN) {
+		return NP_ERR_CORRUPT; /* Invalid protocol version */
+	}
+
+	/* Extract flags */
+	*flags = extract_uint8(ptroffset(decode, FLAGS_OFFSET));
+	*count = extract_uint32(ptroffset(decode, COUNT_OFFSET));
+
+	/* Extract dt_ns and convert */
+	*dt_ns = extract_uint32(ptroffset(decode, DT_NS_OFFSET));
+	if (*dt_ns >= 1000000000) { /* dt_ns is corrupted */
+		return NP_ERR_CORRUPT;
+	}
+	dt_s = extract_uint32(ptroffset(decode, DT_NS_OFFSET));
+	*dt_ns += 1000000000 * (dt_s); /* Append seconds as well */
+
+	/* Extract data size and check if valid */
+	*datasize = extract_uint32(ptroffset(decode, SIZE_OFFSET));
+	if( (*datasize + NETSTRUCT_LEN) > decodelen ) {
+		return NP_ERR_CORRUPT; /* Datasize is larger than available data */
+	}
+
+	/* Finally, extract the data */
+	*dataout  = ptroffset(decode, DATA_OFFSET);
+
+	/* Success */
+	return 0;
+}
+
+/* Local only function for getting size of a netstruct and data */
+int netprot_header_getsize(struct netstruct *in) {
+	return NETSTRUCT_LEN + ntohl(in->size);
+}

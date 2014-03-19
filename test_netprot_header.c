@@ -166,9 +166,107 @@ void test_netprot_header_append(void) {
 	test_fixture_end();
 }
 
+/* Test for pointers being null */
+void test_decode_nullptr(void) {
+	/* Params */
+	void *decode;
+	int decodelen;
+	char *dataout; 
+	int datasize;
+	int count; 
+	long long dt_ns; 
+	char flags;
+	/* Return value */
+	int err;
+
+	/* Test all values null */
+	err = netprot_header_decode(NULL, 0, NULL, NULL, NULL, NULL, NULL);
+	assert_int_equal(NP_ERR_PARAM, err);
+
+	/* Test decode null */
+	err = netprot_header_decode(NULL, decodelen, &dataout, &datasize, &count, &dt_ns, &flags);
+	assert_int_equal(NP_ERR_PARAM, err);
+
+	/* Test dataout null */
+	err = netprot_header_decode(decode, decodelen, NULL, &datasize, &count, &dt_ns, &flags);
+	assert_int_equal(NP_ERR_PARAM, err);
+
+	/* Test datasize null */
+	err = netprot_header_decode(decode, decodelen, &dataout, NULL, &count, &dt_ns, &flags);
+	assert_int_equal(NP_ERR_PARAM, err);
+
+	/* Test count null */
+	err = netprot_header_decode(decode, decodelen, &dataout, &datasize, NULL, &dt_ns, &flags);
+	assert_int_equal(NP_ERR_PARAM, err);
+
+	/* Test dt_ns null */
+	err = netprot_header_decode(decode, decodelen, &dataout, &datasize, &count, NULL, &flags);
+	assert_int_equal(NP_ERR_PARAM, err);
+
+	/* Test flags null */
+	err = netprot_header_decode(decode, decodelen, &dataout, &datasize, &count, &dt_ns, NULL);
+	assert_int_equal(NP_ERR_PARAM, err);
+}
+
+/* Test to see if data can be encoded and decoded */
+void test_decode_data(void) {
+	struct netstruct *header, *headercopy;
+	char datain[] = "Example Data, reasonably long to catch errors";
+	size_t datainsize = sizeof(datain) / sizeof(datain[0]);
+	size_t struct_size;
+
+	/* Params */
+	int decodelen;
+	char *dataout; 
+	int dataoutsize;
+	int count; 
+	long long dt_ns; 
+	char flags;
+	int err;
+
+	/* Check data size is valid */
+	assert_int_equal(datainsize, strlen(datain)+1);
+
+	/* Malloc space for header */
+	header = (struct netstruct *)
+		malloc(sizeof(struct netstruct) + datainsize);
+
+	/* Stick the data in the header */
+	memcpy(header->data, datain, datainsize);
+
+	/* Now append the header*/
+	err = netprot_header_append(header, 0, datainsize, 0, 0);
+	assert_false(err);
+
+	/* Get the size */
+	struct_size = netprot_header_getsize(header);
+
+	/* Create a new struct and copy to that */
+	headercopy = (struct netstruct *) malloc(struct_size);
+
+	memcpy(headercopy, header, struct_size);
+
+	/* Extract the data */
+	err = netprot_header_decode(headercopy, struct_size, &dataout, &dataoutsize, &count, &dt_ns, &flags);
+	assert_int_equal(NP_ERR_OK, err);
+
+	/* Compare datasize */
+	assert_int_equal(datainsize, dataoutsize);
+
+	/* Compare data*/
+	assert_n_array_equal(datain, headercopy->data, datainsize);
+}
+
+void test_netprot_header_decode(void) {
+	test_fixture_start();
+	run_test(test_decode_nullptr);
+	run_test(test_decode_data);
+	test_fixture_end();
+}
 
 void all_tests(void) {
 	test_netprot_header_append();
+	test_netprot_header_decode();
 }
 
 /* Actually run the tests */
