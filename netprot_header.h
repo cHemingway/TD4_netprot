@@ -4,6 +4,9 @@
 
 #include <stdint.h>
 
+#ifndef NETPROT_VERSION
+#define NETPROT_VERSION 1
+#endif
 
 enum netprot_flags {
 	DATA_INVALID = 0x01,

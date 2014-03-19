@@ -21,7 +21,7 @@ int netprot_header_append(struct netstruct *toappend, int count,
 	}
 
 	/* Set default fields */
-	toappend->version = 1;
+	toappend->version 	 = NETPROT_VERSION;
 	toappend->header_size = offsetof(struct netstruct, data);
 	toappend->channel_no = 0; /* Hardcoded for now */
 	toappend->ts_s		 = 0; /* Timestamp is not used yet */
