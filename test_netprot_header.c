@@ -139,6 +139,23 @@ void test_size(void) {
 	assert_int_equal(sizein, sizeout);
 }
 
+/* Test count is stored correctly */
+void test_count(void) {
+	struct netstruct header;
+	char *ptr; /* So we can index into header */
+	int err;
+	int countin = 0xbbaaddff; /* Designed to trip up byte order */
+	int countout;
+
+	err = netprot_header_append(&header, countin, 0, 0, 0);
+	assert_false(err);
+
+	/* Check size is valid */
+	ptr = getoffsetptr(header, 4);  /* Count is 4 bytes in */
+	countout = extract_uint32(ptr);
+	assert_int_equal(countin, countout);
+}
+
 /* Tests for netprot_header_append*/
 void test_netprot_header_append(void) {
 	test_fixture_start();
@@ -149,6 +166,7 @@ void test_netprot_header_append(void) {
 	run_test(test_dt);
 	run_test(test_header_size);
 	run_test(test_size);
+	run_test(test_count);
 	test_fixture_end();
 }
 
