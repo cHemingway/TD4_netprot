@@ -8,7 +8,7 @@
 
 
 #define getoffsetptr(val, offset) (((char*)&(val)) + (offset))
-#define extract_uint8(ptr)  ((char)*((uint8_t *)(ptr)) & 0xff)
+#define extract_uint8(ptr)  ((char) (*(uint8_t *)(ptr)) & 0xff)
 #define extract_uint32(ptr) (ntohl((int)*((uint32_t *)(ptr))) & 0xffffffff)
 
 /* Test to see if it rejects a null pointer */
