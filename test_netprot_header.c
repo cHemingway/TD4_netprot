@@ -5,11 +5,7 @@
 #include <string.h>
 #include "seatest.h"
 #include "netprot_header.h"
-
-
-#define getoffsetptr(val, offset) (((char*)&(val)) + (offset))
-#define extract_uint8(ptr)  ((char) (*(uint8_t *)(ptr)) & 0xff)
-#define extract_uint32(ptr) (ntohl((int)*((uint32_t *)(ptr))) & 0xffffffff)
+#include "netprot_header_prv.h"
 
 /* Test to see if it rejects a null pointer */
 void test_pack_nullptr(void) {

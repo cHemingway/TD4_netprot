@@ -1,4 +1,5 @@
 #include "netprot_header.h"
+#include "netprot_header_prv.h"
 
 #include <stdint.h>
 #include <stddef.h>
