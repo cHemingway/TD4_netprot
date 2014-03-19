@@ -1,6 +1,7 @@
 #Just enough makefile so I can get test output in sublime
 
-CFLAGS= -Wall -g
+CC= cc
+CFLAGS=  -g
 
 all: test
 
