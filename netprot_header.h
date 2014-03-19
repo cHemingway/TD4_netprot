@@ -18,7 +18,8 @@ enum netprot_flags {
 	TS_INVALID   = 0x02
 };
 
-struct __attribute__ ((__packed__)) netstruct {
+/* Private structure for a _network_encoded_ netstruct. Do not modify any fields apart from data */
+struct netstruct {
 	uint8_t 	version;
 	uint8_t 	header_size;
 	uint8_t 	flags;
@@ -30,8 +31,7 @@ struct __attribute__ ((__packed__)) netstruct {
 	uint32_t 	dt_ns;
 	uint32_t 	size;
 	char	 	data[0];
-};
-
+} __attribute__((packed));
 
 
 int netprot_header_append(struct netstruct *toappend, int count,
