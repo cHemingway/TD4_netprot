@@ -7,6 +7,7 @@
 ##################
 *.o
 test_netprot_header
+.dSYM
 
 #OS Stuff #
 ###########
@@ -17,3 +18,4 @@ test_netprot_header
 .Trashes
 ehthumbs.db
 Thumbs.db
+*.plist
