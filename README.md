@@ -4,15 +4,11 @@ TD4_netprot
 Struct mangling for TD4.
 Requires GNU Make and a C compiler (so use linux or OSX).
 
-### Building
 
-```
-$ make 
-```
 
 ### Testing
 ```
-$ make test
+$ make
 $ ./test_netprot_header
 ```
 All tests should run and pass.
